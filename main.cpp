@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <utility>
+#include <math.h>
 
 #include "reader.hpp"
 #include "stemmer.hpp"
@@ -42,6 +43,31 @@ int main(int argc, char* argv[]) {
 	for(int i = 0; i < 9; i++) {
 		for(int j = 0; j < 5; j++) {
 			std::cout << matrix[i][j] << " ";
+		}
+		std::cout << keywords[i] << std::endl;
+	}
+	/* create the weighted matrix */
+	double w_matrix[9][5]; /* create the weighted matrix */
+	for(int i = 0; i < 9; i++) { /* loop over all words */
+		for(int j = 0; j < 5; j++) { /* loop over all documents */
+			int ni = 0; /* set word counter to 0 */
+			for(int k = 0; k < 5; k++) { /* loop over all documents */
+				if(matrix[i][k] > 0) { /* check if the document contains the word at least once */
+					ni++; /* increase "document with word" counter by one */
+				}
+			}
+			if(matrix[i][j] != 0) { /* check if matrix has a non zero number (prevent infinity times 0 error) */
+				w_matrix[i][j] = (double)matrix[i][j] * log((double)5 / (double)ni); /* use calculation from chapter 3 to get a weighted matrix */
+			} else {
+				w_matrix[i][j] = 0.0f; /* set entry to 0 (prevent infinity times 0 error) */
+			}
+		}
+	}
+	/* output the resulting weighted matrix */
+	std::cout << std::endl;
+	for(int i = 0; i < 9; i++) {
+		for(int j = 0; j < 5; j++) {
+			std::cout << w_matrix[i][j] << " ";
 		}
 		std::cout << keywords[i] << std::endl;
 	}
